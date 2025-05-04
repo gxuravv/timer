@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Made with 💕</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    :root {
+      --primary-color: #00b894;
+      --bg-color: #121212;
+      --text-color: #ffffff;
+      --button-bg: rgba(255, 255, 255, 0.1);
+      --button-hover: rgba(255, 255, 255, 0.2);
+      --button-active: var(--primary-color);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      user-select: none;
+      overflow: hidden;
+      transition: background-color 0.3s ease;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .display-container {
+      position: relative;
+      left: -153px;
+      margin-bottom: 40px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #display {
+      font-size: 5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 184, 148, 0.5);
+      transition: font-size 0.3s ease;
+      text-align: center;
+      width: 100%;
+      max-width: 100%;
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (min-width: 768px) {
+      #display {
+        font-size: 8rem;
+      }
+    }
+
+    .status-indicator {
+      position: absolute;
+      left: 153px;
+      font-size: 1rem;
+      margin-top: 5px;
+      opacity: 0.7;
+      text-align: center;
+      width: 100%;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 15px;
+      width: 100%;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    @media (min-width: 768px) {
+      .button-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: var(--text-color);
+      border: 2px solid var(--text-color);
+      border-radius: 20px;
+      padding: 15px 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      height: 60px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button.active {
+      background-color: var(--primary-color);
+      color: var(--bg-color);
+      border-color: var(--primary-color);
+    }
+
+    button i {
+      font-size: 1.2rem;
+    }
+
+    #showBtn {
+      margin-top: 10px;
+      display: none;
+    }
+
+    .laps-container {
+      width: 100%;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .laps-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+    }
+
+    .lap-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .lap-item:last-child {
+      border-bottom: none;
+    }
+
+    .lap-item span {
+      text-align: center;
+    }
+
+    .lap-item:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .shortcuts {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      text-align: center;
+      opacity: 0.7;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* For mobile */
+    @media (max-width: 480px) {
+      .button-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      #display {
+        font-size: 3rem;
+      }
+      
+      button {
+        padding: 10px;
+        height: 50px;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Custom scrollbar */
+    .laps-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .laps-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .laps-container::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Dark theme */
+    body.light-theme {
+      --bg-color: #f5f5f5;
+      --text-color: #121212;
+      --button-bg: rgba(0, 0, 0, 0.1);
+      --button-hover: rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle">🌙</button>
+  
+  <div class="container">
+    <div class="display-container">
+      <div style="width: 100%; text-align: center;">
+        <h1 id="display">00:00:00.000</h1>
+        <div id="statusIndicator" class="status-indicator">Ready</div>
+      </div>
+    </div>
+
+    <div class="button-grid" id="btnGrid">
+      <button id="startBtn">▶️ Start</button>
+      <button id="stopBtn">⏹️ Stop</button>
+      <button id="resetBtn">🔄 Reset</button>
+      <button id="lapBtn">🏁 Lap</button>
+      <button id="clearLapsBtn">🧹 Clear Laps</button>
+      <button id="fullscreenBtn">📺 Fullscreen</button>
+      <button id="hideBtn">👁️ Hide UI</button>
+      <button id="settingsBtn">⚙️ Settings</button>
+    </div>
+
+    <button id="showBtn" class="hidden">Show Controls</button>
+
+    <div id="lapsContainer" class="laps-container hidden">
+      <div class="laps-header">
+        <span>Lap</span>
+        <span>Lap Time</span>
+        <span>Total Time</span>
+      </div>
+      <div id="lapsList"></div>
+    </div>
+
+    <div class="shortcuts">
+      Space: Start/Stop | L: Lap | R: Reset | C: Clear Laps | F: Fullscreen | H: Hide/Show UI
+    </div>
+
+    <div id="settingsModal" class="hidden">
+      <!-- Settings would go here in a real implementation -->
+    </div>
+  </div>
+
+  <script>
+    // Main StopWatch Class
+    class Stopwatch {
+      constructor(displayElement, statusElement) {
+        this.display = displayElement;
+        this.statusIndicator = statusElement;
+        this.startTime = 0;
+        this.elapsedTime = 0;
+        this.intervalId = null;
+        this.running = false;
+        this.laps = [];
+        this.lastLapTime = 0;
+        
+        // Using requestAnimationFrame for more accurate timing
+        this.animationFrameId = null;
+        
+        // Set initial display
+        this.updateDisplay(0);
+        this.updateStatus('Ready');
+      }
+      
+      // Format milliseconds as HH:MM:SS.mmm
+      formatTime(milliseconds) {
+        const date = new Date(milliseconds);
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        const ms = String(milliseconds % 1000).padStart(3, '0');
+        return `${hours}:${minutes}:${seconds}.${ms}`;
+      }
+      
+      // Format time difference for lap display
+      formatLapTime(milliseconds) {
+        if (milliseconds < 0) return "00:00.000";
+        
+        const minutes = Math.floor(milliseconds / 60000);
+        const seconds = Math.floor((milliseconds % 60000) / 1000);
+        const ms = milliseconds % 1000;
+        
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
+      }
+      
+      // Update the display with current time
+      updateDisplay(time) {
+        this.display.textContent = this.formatTime(time);
+      }
+      
+      // Update status indicator
+      updateStatus(status) {
+        this.statusIndicator.textContent = status;
+      }
+      
+      // Start the stopwatch
+      start() {
+        if (!this.running) {
+          this.running = true;
+          this.startTime = Date.now() - this.elapsedTime;
+          this.updateStatus('Running');
+          
+          // Use requestAnimationFrame for smoother updates
+          const tick = () => {
+            if (this.running) {
+              this.elapsedTime = Date.now() - this.startTime;
+              this.updateDisplay(this.elapsedTime);
+              this.animationFrameId = requestAnimationFrame(tick);
+            }
+          };
+          
+          this.animationFrameId = requestAnimationFrame(tick);
+        }
+      }
+      
+      // Stop the stopwatch
+      stop() {
+        if (this.running) {
+          this.running = false;
+          cancelAnimationFrame(this.animationFrameId);
+          this.updateStatus('Paused');
+        }
+      }
+      
+      // Reset the stopwatch
+      reset() {
+        this.stop();
+        this.elapsedTime = 0;
+        this.lastLapTime = 0;
+        this.updateDisplay(0);
+        this.updateStatus('Ready');
+      }
+      
+      // Record a lap
+      lap() {
+        if (this.running) {
+          const lapTime = this.elapsedTime - this.lastLapTime;
+          this.laps.push({
+            number: this.laps.length + 1,
+            lapTime: lapTime,
+            totalTime: this.elapsedTime
+          });
+          this.lastLapTime = this.elapsedTime;
+          return this.laps[this.laps.length - 1];
+        }
+        return null;
+      }
+      
+      // Clear all laps
+      clearLaps() {
+        this.laps = [];
+        this.lastLapTime = this.running ? this.elapsedTime : 0;
+      }
+      
+      // Toggle running state
+      toggle() {
+        if (this.running) {
+          this.stop();
+        } else {
+          this.start();
+        }
+      }
+      
+      // Get current state
+      isRunning() {
+        return this.running;
+      }
+      
+      // Get all laps
+      getLaps() {
+        return this.laps;
+      }
+    }
+
+    // UI Controller
+    class StopwatchUI {
+      constructor() {
+        // Elements
+        this.displayEl = document.getElementById('display');
+        this.statusEl = document.getElementById('statusIndicator');
+        this.btnGrid = document.getElementById('btnGrid');
+        this.startBtn = document.getElementById('startBtn');
+        this.stopBtn = document.getElementById('stopBtn');
+        this.resetBtn = document.getElementById('resetBtn');
+        this.lapBtn = document.getElementById('lapBtn');
+        this.clearLapsBtn = document.getElementById('clearLapsBtn');
+        this.fullscreenBtn = document.getElementById('fullscreenBtn');
+        this.hideBtn = document.getElementById('hideBtn');
+        this.showBtn = document.getElementById('showBtn');
+        this.settingsBtn = document.getElementById('settingsBtn');
+        this.lapsContainer = document.getElementById('lapsContainer');
+        this.lapsList = document.getElementById('lapsList');
+        this.themeToggle = document.getElementById('themeToggle');
+        
+        // Create stopwatch instance
+        this.stopwatch = new Stopwatch(this.displayEl, this.statusEl);
+        
+        // Initialize
+        this.initEventListeners();
+        this.loadSettings();
+      }
+      
+      initEventListeners() {
+        // Button listeners
+        this.startBtn.addEventListener('click', () => this.handleStart());
+        this.stopBtn.addEventListener('click', () => this.handleStop());
+        this.resetBtn.addEventListener('click', () => this.handleReset());
+        this.lapBtn.addEventListener('click', () => this.handleLap());
+        this.clearLapsBtn.addEventListener('click', () => this.handleClearLaps());
+        this.fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+        this.hideBtn.addEventListener('click', () => this.hideControls());
+        this.showBtn.addEventListener('click', () => this.showControls());
+        this.themeToggle.addEventListener('click', () => this.toggleTheme());
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        
+        // Fullscreen change listener
+        document.addEventListener('fullscreenchange', () => this.updateFullscreenButton());
+      }
+      
+      handleStart() {
+        this.stopwatch.start();
+        this.updateButtonStates();
+      }
+      
+      handleStop() {
+        this.stopwatch.stop();
+        this.updateButtonStates();
+      }
+      
+      handleReset() {
+        this.stopwatch.reset();
+        this.updateButtonStates();
+        this.updateLapsUI();
+      }
+      
+      handleLap() {
+        if (this.stopwatch.isRunning()) {
+          const lap = this.stopwatch.lap();
+          if (lap) {
+            this.addLapToUI(lap);
+            this.lapsContainer.classList.remove('hidden');
+          }
+        }
+      }
+      
+      handleClearLaps() {
+        this.stopwatch.clearLaps();
+        this.lapsList.innerHTML = '';
+        this.lapsContainer.classList.add('hidden');
+      }
+      
+      addLapToUI(lap) {
+        const lapItem = document.createElement('div');
+        lapItem.className = 'lap-item';
+        
+        const lapNumber = document.createElement('span');
+        lapNumber.textContent = lap.number;
+        
+        const lapTime = document.createElement('span');
+        lapTime.textContent = this.stopwatch.formatLapTime(lap.lapTime);
+        
+        const totalTime = document.createElement('span');
+        totalTime.textContent = this.stopwatch.formatTime(lap.totalTime);
+        
+        lapItem.appendChild(lapNumber);
+        lapItem.appendChild(lapTime);
+        lapItem.appendChild(totalTime);
+        
+        // Highlight fastest and slowest laps
+        if (this.stopwatch.getLaps().length > 1) {
+          const laps = this.stopwatch.getLaps();
+          const lapTimes = laps.map(l => l.lapTime);
+          const fastest = Math.min(...lapTimes);
+          const slowest = Math.max(...lapTimes);
+          
+          if (lap.lapTime === fastest) {
+            lapTime.style.color = '#00b894';
+          } else if (lap.lapTime === slowest) {
+            lapTime.style.color = '#e74c3c';
+          }
+        }
+        
+        this.lapsList.appendChild(lapItem);
+        this.lapsContainer.scrollTop = this.lapsContainer.scrollHeight;
+      }
+      
+      updateLapsUI() {
+        this.lapsList.innerHTML = '';
+        const laps = this.stopwatch.getLaps();
+        
+        if (laps.length === 0) {
+          this.lapsContainer.classList.add('hidden');
+          return;
+        }
+        
+        laps.forEach(lap => {
+          this.addLapToUI(lap);
+        });
+        
+        this.lapsContainer.classList.remove('hidden');
+      }
+      
+      updateButtonStates() {
+        const isRunning = this.stopwatch.isRunning();
+        
+        this.startBtn.classList.toggle('active', isRunning);
+        this.stopBtn.classList.toggle('active', !isRunning && this.stopwatch.elapsedTime > 0);
+        
+        // Disable/Enable buttons based on state
+        this.startBtn.disabled = isRunning;
+        this.stopBtn.disabled = !isRunning;
+        this.resetBtn.disabled = isRunning && this.stopwatch.elapsedTime === 0;
+        this.lapBtn.disabled = !isRunning;
+      }
+      
+      toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            alert(`Error attempting to enable fullscreen: ${err.message}`);
+          });
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+      
+      updateFullscreenButton() {
+        if (document.fullscreenElement) {
+          this.fullscreenBtn.textContent = '📺 Exit Fullscreen';
+        } else {
+          this.fullscreenBtn.textContent = '📺 Fullscreen';
+        }
+      }
+      
+      hideControls() {
+        this.btnGrid.classList.add('hidden');
+        this.showBtn.classList.remove('hidden');
+      }
+      
+      showControls() {
+        this.btnGrid.classList.remove('hidden');
+        this.showBtn.classList.add('hidden');
+      }
+      
+      toggleTheme() {
+        document.body.classList.toggle('light-theme');
+        this.themeToggle.textContent = document.body.classList.contains('light-theme') ? '🌙' : '☀️';
+        
+        // Save theme preference
+        localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+      }
+      
+      handleKeyDown(e) {
+        // Ignore keyboard shortcuts when typing in an input field
+        if (e.target.tagName === 'INPUT') return;
+        
+        switch(e.key.toLowerCase()) {
+          case ' ':
+            e.preventDefault();
+            this.stopwatch.toggle();
+            this.updateButtonStates();
+            break;
+          case 'r':
+            this.handleReset();
+            break;
+          case 'l':
+            this.handleLap();
+            break;
+          case 'f':
+            e.preventDefault();
+            this.toggleFullscreen();
+            break;
+          case 'h':
+            if (this.btnGrid.classList.contains('hidden')) {
+              this.showControls();
+            } else {
+              this.hideControls();
+            }
+            break;
+          case 'c':
+            this.handleClearLaps();
+            break;
+        }
+      }
+      
+      loadSettings() {
+        // Load theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+          document.body.classList.add('light-theme');
+          this.themeToggle.textContent = '🌙';
+        }
+        
+        // Initialize button states
+        this.updateButtonStates();
+      }
+    }
+
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      const app = new StopwatchUI();
+    });
+  </script>
+</body>
+</html>
